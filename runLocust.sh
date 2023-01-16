@@ -9,7 +9,7 @@ SCRIPT_NAME=`basename "$0"`
 INITIAL_DELAY=1
 TARGET_HOST="$HOST"
 CLIENTS=2
-REQUESTS=10
+TIME=10
 
 
 do_check() {
@@ -21,7 +21,7 @@ do_check() {
   fi
 
   # check for locust
-  if [ ! `command -v locust` ]; then
+  if [ ! `command -v /home/ws1/.local/bin/locust` ]; then
     echo "Python 'locust' package is not found!"
     exit 1
   fi
@@ -45,8 +45,9 @@ do_exec() {
       exit 1
   fi
 
-  echo "Will run $LOCUST_FILE against $TARGET_HOST. Spawning $CLIENTS clients and $REQUESTS total requests."
-  locust --host=http://$TARGET_HOST -f $LOCUST_FILE --clients=$CLIENTS --hatch-rate=5 --num-request=$REQUESTS --no-web --only-summary
+  echo "Will run $LOCUST_FILE against $TARGET_HOST. Spawning $CLIENTS clients and $TIME total TIME."
+  /home/ws1/.local/bin/locust  --host=http://$TARGET_HOST -f $LOCUST_FILE --users $CLIENTS --spawn-rate=5 --run-time=$TIME  --only-summary --csv=result
+  echo  "/home/ws1/.local/bin/locust  --host=http://$TARGET_HOST -f $LOCUST_FILE --users $CLIENTS --spawn-rate=5 --run-time=$TIME --only-summary --csv=result"
   echo "done"
 }
 
@@ -59,7 +60,7 @@ Options:
   -d  Delay before starting
   -h  Target host url, e.g. http://localhost/
   -c  Number of clients (default 2)
-  -r  Number of requests (default 10)
+  -r  Number of minutes (default 10)
 
 Description:
   Runs a Locust load simulation against specified host.
@@ -85,8 +86,8 @@ while getopts ":d:h:c:r:" o; do
         #echo $CLIENTS
         ;;
     r)
-        REQUESTS=${OPTARG:-10}
-        #echo $REQUESTS
+        TIME=${OPTARG:-10}
+        #echo $TIME
         ;;
     *)
         do_usage
